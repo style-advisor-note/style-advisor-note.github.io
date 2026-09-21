@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FCF5F8" id="themeColor">
+<script>
+  // 画面の色（ライト／ダーク／端末に合わせる）を、描く前に決める
+  (function () {
+    var t = "light";
+    try { t = (JSON.parse(localStorage.getItem("ba_settings") || "{}").theme) || "light"; } catch (e) {}
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="robots" content="noindex">
+<title>スタイルノート</title>
+<meta name="apple-mobile-web-app-title" content="スタイルノート">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="apple-touch-icon.png">
+<style>
+:root {
+  --bg: #FCF5F8; --bg2: #F3EEFA; --surface: #FFFFFF; --surface2: #FAF1F5; --text: #231F35; --muted: #7D7390; --line: #EFE3EA;
+  --accent: #1E2150; --on-accent: #FFFFFF; --rose: #C8336F; --blush: #F7DDE7; --lilac: #E7E0F5; --mint: #DDF1EE;
+  --skin: #FBE7E0; --hair: #2B2A4A;
+  --good: #1E5E52; --good-bg: #DDF3EE; --ok: #2D3E7A; --ok-bg: #E4E8FA; --warn: #85500A; --warn-bg: #FCEBD0; --bad: #9B1B4B; --bad-bg: #FBDDE8;
+  --shadow: 0 8px 24px rgba(120, 60, 100, .08), 0 1px 3px rgba(120, 60, 100, .06);
+  --sans: "Meiryo", "メイリオ", "Hiragino Sans", "Hiragino Kaku Gothic ProN", -apple-system, BlinkMacSystemFont, "Noto Sans JP", sans-serif;
+  --serif: var(--sans);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    color-scheme: dark;
+    --bg: #16141F; --bg2: #1D1929; --surface: #221E2F; --surface2: #2A2539; --text: #F1ECF4; --muted: #ADA3BD; --line: #362F47;
+    --accent: #E7DDF7; --on-accent: #1E2150; --rose: #F28DB4; --blush: #43293A; --lilac: #332C4B; --mint: #1E3A36;
+    --skin: #F3D9D0; --hair: #0F0E1A;
+    --good: #9FE3D4; --good-bg: #173A33; --ok: #C3CEF6; --ok-bg: #252C4E; --warn: #F5CF8E; --warn-bg: #3E2E12; --bad: #F7A9C6; --bad-bg: #47192C;
+    --shadow: 0 8px 24px rgba(0, 0, 0, .35);
+  }
+}
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #16141F; --bg2: #1D1929; --surface: #221E2F; --surface2: #2A2539; --text: #F1ECF4; --muted: #ADA3BD; --line: #362F47;
+    --accent: #E7DDF7; --on-accent: #1E2150; --rose: #F28DB4; --blush: #43293A; --lilac: #332C4B; --mint: #1E3A36;
+    --skin: #F3D9D0; --hair: #0F0E1A;
+    --good: #9FE3D4; --good-bg: #173A33; --ok: #C3CEF6; --ok-bg: #252C4E; --warn: #F5CF8E; --warn-bg: #3E2E12; --bad: #F7A9C6; --bad-bg: #47192C;
+    --shadow: 0 8px 24px rgba(0, 0, 0, .35);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%) fixed; color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.7; }
+main { max-width: 560px; margin: 0 auto; padding: 12px 16px calc(100px + env(safe-area-inset-bottom)); }
+h1, h2, h3, .serif { font-family: var(--serif); font-weight: 600; letter-spacing: .02em; }
+h1 { font-size: 22px; margin: 8px 0 14px; }
+h2 { font-size: 18px; margin: 28px 0 10px; display: flex; align-items: center; gap: 8px; }
+h2 .ic { color: var(--rose); }
+h3 { font-size: 15px; margin: 14px 0 6px; }
+p { margin: 6px 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.view { display: none; animation: fade .25s ease; }
+.view.on { display: block; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .view { animation: none; } }
+.ic { width: 22px; height: 22px; flex: none; }
+.card { background: var(--surface); border-radius: 22px; padding: 18px; margin: 12px 0; box-shadow: var(--shadow); }
+.muted { color: var(--muted); font-size: 13px; }
+.small { font-size: 14px; }
+.btn { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 10px 20px; min-height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.btn.block { width: 100%; }
+.btn:disabled { opacity: .5; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+:focus-visible { outline: 3px solid var(--rose); outline-offset: 2px; border-radius: 8px; }
+
+/* ---- 早見表 ---- */
+.hero { position: relative; border-radius: 28px; padding: 20px 18px 18px; background: linear-gradient(140deg, var(--blush) 0%, var(--lilac) 100%); overflow: hidden; box-shadow: var(--shadow); }
+.hero svg.art { display: block; width: 220px; height: 180px; margin: -8px auto 2px; }
+.hero .kicker { text-align: center; font-size: 12px; letter-spacing: .2em; color: var(--muted); }
+.hero .title { text-align: center; font-family: var(--serif); font-size: 20px; margin: 2px 0 10px; }
+.hero .quote { font-family: var(--serif); font-size: 16px; line-height: 1.8; text-align: center; margin: 0; }
+.types { background: var(--surface); border-radius: 22px; padding: 6px 16px; margin-top: 14px; box-shadow: var(--shadow); }
+.type { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.type:last-child { border-bottom: none; }
+.type .bub { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.type small { display: block; color: var(--muted); font-size: 11px; line-height: 1.3; }
+.type b { display: block; font-family: var(--serif); font-size: 16px; line-height: 1.4; }
+.type em { display: block; font-style: normal; font-size: 12px; color: var(--muted); font-family: var(--sans); font-weight: 400; }
+.palette { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.dot { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--line), 0 3px 8px rgba(0,0,0,.08); padding: 0; transition: transform .15s; }
+.dot[aria-pressed="true"] { transform: scale(1.15); box-shadow: 0 0 0 2px var(--rose), 0 4px 10px rgba(0,0,0,.12); }
+.swInfo { text-align: center; min-height: 48px; margin-top: 12px; font-size: 14px; }
+.swInfo b { font-family: var(--serif); }
+.avoid { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 8px; }
+.avoid span { font-size: 12px; color: var(--muted); border: 1px dashed var(--line); border-radius: 999px; padding: 2px 10px; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { background: var(--surface); border-radius: 18px; padding: 14px; box-shadow: var(--shadow); }
+.tile .bub { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 8px; }
+.tile b { display: block; font-size: 13px; }
+.tile span { display: block; font-size: 13px; color: var(--muted); line-height: 1.5; margin-top: 2px; }
+.carousel { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 16px 16px; margin: 0 -16px; scrollbar-width: none; }
+.carousel::-webkit-scrollbar { display: none; }
+.rcard { flex: 0 0 72%; scroll-snap-align: center; background: var(--surface); border-radius: 22px; padding: 18px; box-shadow: var(--shadow); position: relative; }
+.rcard .no { font-family: var(--serif); font-size: 34px; line-height: 1; color: var(--rose); opacity: .85; }
+.rcard b { display: block; font-size: 13px; color: var(--muted); margin-top: 6px; }
+.rcard p { font-family: var(--serif); font-size: 16px; margin: 4px 0 0; line-height: 1.6; }
+.hint { text-align: center; font-size: 12px; color: var(--muted); margin-top: -6px; }
+details.fold { background: var(--surface); border-radius: 18px; margin: 8px 0; box-shadow: var(--shadow); }
+details.fold > summary { padding: 14px 16px; list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 14px; }
+details.fold > summary::-webkit-details-marker { display: none; }
+details.fold > summary .bub { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; flex: none; }
+details.fold > summary .chev { margin-left: auto; transition: transform .2s; color: var(--muted); }
+details.fold[open] > summary .chev { transform: rotate(180deg); }
+details.fold > .md { padding: 0 16px 14px; }
+.b-rose { background: var(--blush); color: var(--rose); }
+.b-lilac { background: var(--lilac); color: var(--accent); }
+.b-mint { background: var(--mint); color: var(--good); }
+
+/* ---- md ---- */
+.md { font-size: 14px; }
+.md table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; display: block; overflow-x: auto; }
+.md th, .md td { border-bottom: 1px solid var(--line); padding: 6px; text-align: left; vertical-align: top; }
+.md th { color: var(--muted); font-weight: 600; white-space: nowrap; }
+.md ul, .md ol { padding-left: 1.2em; margin: 6px 0; }
+.md li { margin: 3px 0; }
+.md li::marker { color: var(--rose); }
+.md blockquote { margin: 8px 0; padding: 10px 14px; background: var(--surface2); border-radius: 14px; font-family: var(--serif); }
+.md code { font-size: 12px; background: var(--surface2); padding: 1px 5px; border-radius: 6px; }
+.md h4 { font-family: var(--serif); margin: 14px 0 4px; }
+
+/* ---- メイク ---- */
+.stepNav { display: flex; gap: 8px; overflow-x: auto; padding: 4px 16px 12px; margin: 0 -16px; scrollbar-width: none; }
+.stepNav::-webkit-scrollbar { display: none; }
+.stepNav button { flex: none; width: 52px; border: none; background: none; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); }
+.stepNav button .bub { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); box-shadow: var(--shadow); color: var(--muted); }
+.stepNav button[aria-current="step"] { color: var(--text); font-weight: 700; }
+.stepNav button[aria-current="step"] .bub { background: var(--accent); color: var(--on-accent); }
+.stepCard { text-align: center; padding: 22px 18px; }
+.stepCard .big { width: 96px; height: 96px; border-radius: 50%; margin: 0 auto 10px; display: grid; place-items: center; background: linear-gradient(140deg, var(--blush), var(--lilac)); color: var(--accent); }
+.stepCard .big .ic { width: 48px; height: 48px; }
+.stepCard .no { font-size: 12px; letter-spacing: .15em; color: var(--rose); font-weight: 700; }
+.stepCard h2 { justify-content: center; margin: 2px 0 6px; font-size: 22px; }
+.stepCard .one { font-family: var(--serif); font-size: 16px; line-height: 1.7; margin: 0 0 12px; }
+.point { text-align: left; background: var(--surface2); border-radius: 16px; padding: 12px 14px; margin: 8px 0; font-size: 14px; }
+.point b { display: inline-block; font-size: 12px; color: var(--rose); margin-right: 6px; }
+details.more { text-align: left; margin-top: 10px; }
+details.more > summary { list-style: none; cursor: pointer; text-align: center; color: var(--muted); font-size: 13px; padding: 6px; }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more[open] > summary { display: none; }
+.progress { height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; margin: 0 0 8px; }
+.progress span { display: block; height: 100%; background: linear-gradient(90deg, var(--rose), var(--accent)); transition: width .3s; }
+.pager { position: sticky; bottom: calc(76px + env(safe-area-inset-bottom)); display: flex; gap: 10px; padding: 10px 0 4px; }
+.pager .btn { flex: 1; box-shadow: var(--shadow); }
+.mottos { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 6px; margin: 0 -16px 6px; scrollbar-width: none; }
+.mottos::-webkit-scrollbar { display: none; }
+.mottos span { flex: none; font-family: var(--serif); font-size: 13px; background: var(--surface); border-radius: 999px; padding: 6px 14px; box-shadow: var(--shadow); }
+.cksec { display: flex; align-items: center; gap: 8px; margin: 16px 0 8px; font-weight: 700; font-size: 14px; }
+.ckgrid { display: flex; flex-wrap: wrap; gap: 8px; }
+.ck { border: 1.5px solid var(--line); background: var(--surface); border-radius: 14px; padding: 8px 12px; font-size: 13px; text-align: left; display: inline-flex; gap: 6px; align-items: center; }
+.ck .box { width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--muted); display: grid; place-items: center; flex: none; }
+.ck[aria-pressed="true"] { background: var(--mint); border-color: transparent; color: var(--good); }
+.ck[aria-pressed="true"] .box { background: var(--good); border-color: var(--good); color: var(--mint); }
+.ck .box .ic { width: 14px; height: 14px; opacity: 0; }
+.ck[aria-pressed="true"] .box .ic { opacity: 1; }
+
+/* ---- 判定 ---- */
+.seg { display: flex; background: var(--surface); border-radius: 999px; padding: 5px; gap: 4px; box-shadow: var(--shadow); }
+.seg button { flex: 1; border: none; background: none; border-radius: 999px; padding: 8px; min-height: 42px; font-weight: 600; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.modes { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; margin: 14px 0; }
+.mode { border: 2px solid transparent; background: var(--surface); border-radius: 20px; padding: 12px 6px 10px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+.mode .bub { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; }
+.mode .bub .ic { width: 26px; height: 26px; }
+.mode[aria-pressed="true"] { border-color: var(--rose); }
+.drop { border: 2px dashed var(--line); border-radius: 20px; padding: 16px; text-align: center; background: var(--surface2); }
+.drop .ic { width: 34px; height: 34px; color: var(--rose); }
+.drop p { margin: 4px 0 10px; font-size: 13px; color: var(--muted); }
+.photos { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0; justify-content: center; }
+.photo { position: relative; width: 92px; height: 92px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); background: var(--surface2); }
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo button { position: absolute; top: 4px; right: 4px; width: 28px; height: 28px; border-radius: 50%; border: none; background: rgba(0,0,0,.55); color: #fff; line-height: 1; }
+.slotTitle { font-weight: 700; font-size: 14px; margin: 14px 0 6px; display: flex; justify-content: space-between; }
+textarea, input[type=text], input[type=password], select { width: 100%; border: 1.5px solid var(--line); background: var(--surface); border-radius: 16px; padding: 10px 14px; min-height: 46px; }
+textarea { min-height: 64px; resize: vertical; }
+.toggle { display: flex; gap: 10px; align-items: center; padding: 10px 0; font-size: 14px; }
+.toggle input { width: 22px; height: 22px; accent-color: var(--rose); }
+.notice { background: var(--warn-bg); color: var(--warn); border-radius: 16px; padding: 12px 14px; font-size: 13px; margin: 8px 0; }
+.error { background: var(--bad-bg); color: var(--bad); border-radius: 16px; padding: 12px 14px; font-size: 13px; margin: 8px 0; }
+.loading { display: flex; flex-direction: column; gap: 8px; align-items: center; color: var(--muted); padding: 16px 0; font-size: 13px; }
+.loading .ic { width: 36px; height: 36px; color: var(--rose); animation: twinkle 1.4s ease-in-out infinite; }
+@keyframes twinkle { 50% { transform: scale(.8) rotate(20deg); opacity: .6; } }
+@media (prefers-reduced-motion: reduce) { .loading .ic { animation: none; } }
+.cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+.cat { border: 2px solid transparent; background: var(--surface); border-radius: 16px; padding: 10px 2px 8px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; }
+.cat .ic { width: 26px; height: 26px; color: var(--accent); }
+.cat[aria-pressed="true"] { border-color: var(--rose); }
+.attr { margin: 14px 0; }
+.attr > b { display: block; font-size: 13px; margin-bottom: 6px; }
+.attr > b span { color: var(--muted); font-weight: 400; font-size: 11px; margin-left: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; min-height: 38px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.chip .sw { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.12); flex: none; }
+.chip .g { font-size: 11px; opacity: .75; }
+
+/* ---- 結果 ---- */
+.grade { display: inline-flex; align-items: center; justify-content: center; min-width: 2em; padding: 0 7px; border-radius: 999px; font-weight: 700; font-size: 13px; }
+.g-◎ { background: var(--good-bg); color: var(--good); }
+.g-○ { background: var(--ok-bg); color: var(--ok); }
+.g-△ { background: var(--warn-bg); color: var(--warn); }
+.g-× { background: var(--bad-bg); color: var(--bad); }
+.g-？ { background: var(--surface2); color: var(--muted); }
+.verdict { display: flex; gap: 14px; align-items: center; }
+.medal { width: 76px; height: 76px; border-radius: 50%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+.medal big { font-size: 30px; font-weight: 700; }
+.medal small { font-size: 10px; font-weight: 700; }
+.verdict p { font-family: var(--serif); font-size: 16px; margin: 0; line-height: 1.6; }
+.rs { margin-top: 14px; }
+.rs h3 { display: flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 13px; color: var(--muted); }
+.rs h3 .ic { width: 18px; height: 18px; }
+.item { background: var(--surface2); border-radius: 14px; padding: 10px 12px; margin: 6px 0; font-size: 14px; }
+.item .rule { display: block; font-size: 12px; color: var(--muted); }
+.item .fix { display: block; margin-top: 4px; color: var(--rose); font-weight: 600; font-size: 13px; }
+.item .fix::before { content: "→ "; }
+.advice { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; background: var(--blush); color: var(--text); border-radius: 16px; padding: 12px 14px; font-weight: 600; font-size: 14px; }
+.advice .ic { color: var(--rose); margin-top: 1px; }
+.qa { border-top: 1px dashed var(--line); margin-top: 14px; padding-top: 14px; }
+.hist { display: flex; gap: 12px; align-items: center; width: 100%; text-align: left; border: none; background: none; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.hist img, .hist .ph { width: 52px; height: 52px; object-fit: cover; border-radius: 14px; flex: none; background: var(--surface2); }
+.hist .t { flex: 1; min-width: 0; }
+.hist .t b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; font-size: 14px; }
+.empty { text-align: center; padding: 8px 0; }
+.empty svg { width: 120px; height: 100px; }
+
+/* ---- 下のメニュー ---- */
+nav.tabs { position: fixed; left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); max-width: 536px; margin: 0 auto; background: var(--surface); border-radius: 26px; box-shadow: 0 10px 30px rgba(80, 40, 80, .16); display: flex; padding: 6px; z-index: 10; }
+nav.tabs button { flex: 1; border: none; background: none; border-radius: 20px; padding: 7px 0 5px; font-size: 11px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 1px; }
+nav.tabs button[aria-current="page"] { background: var(--blush); color: var(--rose); font-weight: 700; }
+</style>
+</head>
+<body>
+<main>
+  <div id="update" hidden></div>
+  <section id="v-quick" class="view on" aria-label="早見表"><div id="quick"></div></section>
+  <section id="v-makeup" class="view" aria-label="メイク"><div id="makeup"></div></section>
+  <section id="v-judge" class="view" aria-label="判定"><div id="judge"></div></section>
+  <section id="v-settings" class="view" aria-label="設定"><div id="settings"></div></section>
+</main>
+<nav class="tabs" aria-label="メニュー" id="tabs"></nav>
+
+<script type="module">
+// ================= 設定値 =================
+const APP_VERSION = "2026-09-21.13"; // index.html を直したら上げる（新しい版の知らせに使う）
+const API_URL = "https://api.anthropic.com/v1/messages";
+const API_BETAS = ["server-side-fallback-2026-07-01"];
+const MODELS = {
+  "claude-opus-5": { label: "Claude Opus 5（標準）", inPrice: 5, outPrice: 25 },
+  "claude-sonnet-5": { label: "Claude Sonnet 5（安め）", inPrice: 2, outPrice: 10 },
+};
+const YEN_PER_USD = 150;
+const HISTORY_MAX = 30;
+const MODES = [
+  { id: "item", label: "服・小物", icon: "hanger", tone: "b-rose", slots: [{ label: "服・小物の写真", max: 3 }], shopping: true, product: true },
+  { id: "cosme", label: "コスメ", icon: "lipstick", tone: "b-lilac", slots: [{ label: "コスメ・色の写真", max: 3 }], shopping: true, product: true },
+  { id: "face", label: "メイク後", icon: "face", tone: "b-rose", slots: [{ label: "顔写真", max: 1, front: true }], shopping: false },
+  { id: "outfit", label: "全身コーデ", icon: "dress", tone: "b-lilac", slots: [{ label: "全身の写真", max: 2 }], shopping: false },
+];
+const GRADE_ORDER = { "×": 0, "△": 1, "○": 2, "◎": 3 };
+const TIPS = {
+  item: "服を画面いっぱいに、窓際の明るい場所で。生地のアップを2枚目に足すと厚みが伝わります",
+  cosme: "白い紙の上に置き、窓際の自然光で。部屋の照明は黄色く写り、色がずれます。手の甲に塗った写真もあると◎",
+  face: "明るい窓際で、正面から。顔が画面の半分以上になるくらい近くで",
+  outfit: "鏡の前で、足元まで全身を入れて。明るい場所で撮ると色が正確に伝わります",
+};
+// 写真だけでは分かりにくいことを、タップで伝える
+// ---- 写真から取った色を、数値で名前と色見本に当てはめる ----
+const COLOR_NAMES = [
+  ["ホワイト", "#F5F5F5"], ["オフホワイト", "#EFEBE1"], ["クリーム", "#F3E5C0"], ["ベージュ", "#D9C3A5"], ["グレージュ", "#B3A898"],
+  ["グレー", "#9A9A9A"], ["チャコール", "#4A4A4A"], ["ブラック", "#1C1C1C"], ["キャメル", "#B5834F"], ["ブラウン", "#7B5236"],
+  ["ダークブラウン", "#4A3122"], ["ローズブラウン", "#9C6A6A"], ["テラコッタ", "#B5613F"], ["オレンジ", "#E8812F"], ["イエロー", "#F2D13A"],
+  ["マスタード", "#C9A227"], ["カーキ", "#7C7A4A"], ["グリーン", "#3C8D5A"], ["ミント", "#A6E4DD"], ["ブルー", "#2F5FC4"],
+  ["水色", "#A9CFEF"], ["ネイビー", "#1F2A4F"], ["パープル", "#6A4C93"], ["ラベンダー", "#C6BDE4"], ["ピンク", "#F2A7C3"],
+  ["ローズ", "#C8577A"], ["レッド", "#C62D3A"], ["ワイン", "#7A2336"], ["ボルドー", "#5E1E2B"],
+];
+const hexToRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const rgbToHex = c => "#" + c.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("").toUpperCase();
+function toLab([r, g, b]) {
+  const lin = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+  const [R, G, B] = [lin(r), lin(g), lin(b)];
+  const f = t => t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116;
+  const x = f((R * 0.4124 + G * 0.3576 + B * 0.1805) / 0.95047), y = f(R * 0.2126 + G * 0.7152 + B * 0.0722), z = f((R * 0.0193 + G * 0.1192 + B * 0.9505) / 1.08883);
+  return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
+}
+const deltaE = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+function describeColor(hex) {
+  const lab = toLab(hexToRgb(hex));
+  const name = COLOR_NAMES.map(([n, h]) => [n, deltaE(lab, toLab(hexToRgb(h)))]).sort((a, b) => a[1] - b[1])[0][0];
+  const near = (profile?.colors || []).map(c => [c, deltaE(lab, toLab(hexToRgb(c.hex)))]).sort((a, b) => a[1] - b[1])[0];
+  const chroma = Math.hypot(lab[1], lab[2]);
+  const traits = [lab[0] > 70 ? "明るい" : lab[0] < 35 ? "暗い" : "中くらいの明るさ", chroma < 12 ? "くすみ・グレー寄り" : chroma > 40 ? "鮮やか" : "やや落ち着いた", lab[2] > 25 && lab[2] > Math.abs(lab[1]) ? "黄み寄り" : lab[2] < -8 ? "青み寄り" : ""].filter(Boolean);
+  return { hex, name, traits, near: near && near[1] < 15 ? near[0] : null, nearDist: near ? Math.round(near[1]) : null };
+}
+
+const FACTS = [
+  { id: "fabric", label: "生地の厚み", modes: ["item", "outfit"], opts: ["厚手", "普通", "薄手"] },
+  { id: "fit", label: "着たときのサイズ感", modes: ["item", "outfit"], opts: ["ゆったり", "ジャスト", "ピタッと"] },
+  { id: "length", label: "丈", modes: ["item"], opts: ["長め", "普通", "短め"] },
+  { id: "shade", label: "色味（分かれば）", modes: ["cosme"], opts: ["グレージュ", "ベージュ", "ブラウン", "ローズ", "ピンク", "レッド", "オレンジ", "パープル"] },
+  { id: "texture", label: "質感", modes: ["cosme"], opts: ["ツヤ", "シアー", "マット", "ラメ"] },
+];
+const GRADE_WORD = { "◎": "よく似合う", "○": "似合う", "△": "工夫で◎", "×": "避けたい" };
+
+// ================= アイコンとイラスト（線画） =================
+const P = {
+  sparkle: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>',
+  book: '<path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5c0-.8-.7-1.5-1.5-1.5H13v16h5.5c.8 0 1.5-.7 1.5-1.5z"/><path d="M16.5 8.5l.5 1.2 1.2.5-1.2.5-.5 1.2-.5-1.2-1.2-.5 1.2-.5z"/>',
+  lipstick: '<path d="M9 21h6v-8H9z"/><path d="M10 13V8.5L14 5v8"/><path d="M8 21h8"/>',
+  camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>',
+  hanger: '<path d="M12 7.5a2 2 0 1 1 2-2c0 1-1 1.6-2 2.2V9"/><path d="M12 9l8.5 6.2c.8.6.4 1.8-.6 1.8H4.1c-1 0-1.4-1.2-.6-1.8z"/>',
+  face: '<ellipse cx="12" cy="12" rx="6.5" ry="8"/><path d="M8.5 11q1.5 1.2 3 0M12.5 11q1.5 1.2 3 0"/><path d="M10.5 15.5q1.5 1 3 0"/><path d="M5.5 10C6 5 9 3.5 12 3.5S18 5 18.5 10"/>',
+  dress: '<path d="M9.5 3l-1 4 1.5 2-4 12h12l-4-12 1.5-2-1-4"/><path d="M10 9h4"/>',
+  mirror: '<ellipse cx="12" cy="9.5" rx="6" ry="6.5"/><path d="M12 16v5M9 21h6"/><path d="M9.5 7.5l2-2M9.5 10.5l4.5-4.5"/>',
+  body: '<circle cx="12" cy="4.5" r="2"/><path d="M8 21l1-7-2-5c2-1.5 8-1.5 10 0l-2 5 1 7"/>',
+  palette: '<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 2-2s-1-1.5-1-2.5 1-1.5 2-1.5h2a4 4 0 0 0 4-4c0-4.5-4-8-9-8z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/>',
+  heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  ribbon: '<path d="M12 10c-2-3-6-4-7-2s2 4 7 2c5 2 8 0 7-2s-5-1-7 2z"/><path d="M11 11l-3 9 2-1 1 2 1-10M13 11l3 9-2-1-1 2"/>',
+  heel: '<path d="M3 17c3 0 5-1 7-4l3-4c1-1.5 3-1 3 .5V13l3 1.5c1 .5 1.5 1.5 1.5 2.5H14c-1 0-2 .5-2.5 1.5L11 19H3z"/><path d="M17 19v-4"/>',
+  tshirt: '<path d="M8 3L3.5 6l2 4 2-1V21h9V9l2 1 2-4L16 3c-.5 1.5-2 2.5-4 2.5S8.5 4.5 8 3z"/>',
+  star: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z"/>',
+  pants: '<path d="M7 3h10l1.5 18h-4L12 9l-2.5 12h-4z"/><path d="M7 6h10"/>',
+  skirt: '<path d="M8 4h8l4 16H4z"/><path d="M8 7h8"/>',
+  coat: '<path d="M9 3l3 3 3-3 4 3v15h-5v-9l-2-6-2 6v9H5V6z"/>',
+  bag: '<path d="M5 9h14l-1 11H6z"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/>',
+  earring: '<circle cx="12" cy="5" r="1.5"/><path d="M12 6.5v3"/><circle cx="12" cy="14" r="4.5"/><circle cx="12" cy="14" r="1.5"/>',
+  drop: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  bottle: '<path d="M10 3h4v3h-4z"/><path d="M8.5 6h7a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/><path d="M10 12q2 2 4 0"/>',
+  lipbalm: '<rect x="8" y="10" width="8" height="11" rx="1.5"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/><path d="M8 14h8"/>',
+  pores: '<path d="M12 3c-2 4-3 8-3 11a3 3 0 0 0 6 0c0-3-1-7-3-11z"/><circle cx="11" cy="13" r=".6"/><circle cx="13" cy="14.5" r=".6"/><circle cx="12" cy="11" r=".6"/>',
+  tube: '<path d="M7 3h10l-1.5 13h-7z"/><path d="M9.5 16h5v3a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1z"/>',
+  pump: '<path d="M11 3h5M13.5 3v3"/><path d="M11 6h5v3h-5z"/><path d="M8 9h11a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1z"/>',
+  wand: '<path d="M9 21l-2-2L16 10l2 2z"/><path d="M16 10l2-2a1.4 1.4 0 0 1 2 2l-2 2"/><path d="M5 5l.6 1.4L7 7l-1.4.6L5 9l-.6-1.4L3 7l1.4-.6z"/>',
+  compact: '<circle cx="12" cy="13" r="7.5"/><circle cx="12" cy="13" r="4.5"/><path d="M8 5.5a7.5 7.5 0 0 1 8 0"/>',
+  eye: '<path d="M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/><path d="M6 7L5 5M9 5.5 8.5 3.5M15 5.5l.5-2M18 7l1-2"/>',
+  brow: '<path d="M3 13c3-4.5 9-5.5 16-2.5"/><path d="M6 11l-.5-1.5M9 9.5l-.3-1.6M12 9l.1-1.6M15 9.3l.4-1.5"/><path d="M5.5 17q3 1.5 6 0"/>',
+  blush: '<path d="M10 3h4v7h-4z"/><path d="M9 10h6l1 3H8z"/><ellipse cx="12" cy="18" rx="7" ry="3"/>',
+  contour: '<path d="M6 8c0 7 3 12 6 12s6-5 6-12"/><path d="M6 8c0-3 2.7-5 6-5s6 2 6 5"/><path d="M7.5 14c1 2.5 2.5 4.5 4.5 4.5" stroke-dasharray="1.5 2"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  ok: '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5l2.3 2.3 4.7-5"/>',
+  alert: '<path d="M12 4l9 15.5H3z"/><path d="M12 10v4M12 16.8v.2"/>',
+  help: '<circle cx="12" cy="12" r="8.5"/><path d="M9.8 9.5a2.3 2.3 0 1 1 3.2 2.1c-.6.3-1 .8-1 1.4v.5M12 16.5v.2"/>',
+  bagq: '<path d="M5 9h14l-1 11H6z"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/><path d="M11 13.5a1.2 1.2 0 1 1 1.6 1.1c-.4.2-.6.5-.6.9M12 18v.2"/>',
+  chev: '<path d="M6 9l6 6 6-6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  photo: '<rect x="3.5" y="5" width="17" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="M20.5 15.5l-5-5-9 8.5"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l8.5-8.5M16 7l2 2M14 9l1.5 1.5"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  flower: '<circle cx="12" cy="12" r="2"/><path d="M12 10c-1.5-3-1-6 0-6.5 1 .5 1.5 3.5 0 6.5zM12 14c1.5 3 1 6 0 6.5-1-.5-1.5-3.5 0-6.5zM10 12c-3 1.5-6 1-6.5 0 .5-1 3.5-1.5 6.5 0zM14 12c3-1.5 6-1 6.5 0-.5 1-3.5 1.5-6.5 0z"/>',
+};
+const icon = (name, cls = "") => `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[name] || P.sparkle}</svg>`;
+const star = (x, y, r, c) => `<path d="M${x} ${y - r}l${r * .3} ${r * .7} ${r * .7} ${r * .3}-${r * .7} ${r * .3}-${r * .3} ${r * .7}-${r * .3}-${r * .7}-${r * .7}-${r * .3} ${r * .7}-${r * .3}z" fill="${c}"/>`;
+
+// 早見表のいちばん上の線画
+const HERO = `<svg class="art" viewBox="0 0 220 180" aria-hidden="true">
+  <path d="M38 34C78 2 170 8 196 58c24 48-12 112-86 114C48 174 8 140 12 96c2-34 8-48 26-62z" fill="var(--surface)" opacity=".55"/>
+  <circle cx="44" cy="52" r="5" fill="#C6BDE4"/><circle cx="182" cy="120" r="4" fill="#A6E4DD"/><circle cx="170" cy="40" r="3" fill="#EDDBE5"/>
+  ${star(58, 128, 8, "#D61A6A")}${star(176, 70, 6, "#C6BDE4")}${star(40, 90, 4, "#164BCC")}
+  <path d="M77 70c-4-30 14-42 33-42 21 0 38 13 34 44 2 26 6 44 16 64-8 5-17 3-22-3 2 14-4 24-14 28H96c-10-4-16-14-14-28-5 6-14 8-22 3 10-20 14-40 17-66z" fill="var(--hair)"/>
+  <path d="M152 112c3 6 1 13-4 16M68 112c-3 6-1 13 4 16" stroke="var(--hair)" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M82 96c-5 9 3 15-1 24s2 16 0 22M138 96c5 9-3 15 1 24s-2 16 0 22M76 118c-4 7 0 12-4 18M144 118c4 7 0 12 4 18" stroke="#56547E" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".8"/>
+  <path d="M100 106h20l2 22H98z" fill="var(--skin)"/>
+  <path d="M56 176c4-30 26-46 54-46s50 16 54 46z" fill="#FFFFFF" stroke="#E9DDE6"/>
+  <path d="M86 134c14 7 34 7 48 0" stroke="#E0D2DC" fill="none" stroke-width="1.5"/>
+  <ellipse cx="110" cy="80" rx="26" ry="32" fill="var(--skin)"/>
+  <path d="M84 74c0-24 16-34 32-32 14 2 23 12 22 28-8-12-22-17-34-13-10 3-16 9-20 17z" fill="var(--hair)"/>
+  <path d="M96 50c10-6 24-5 32 4" stroke="#56547E" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".8"/>
+  <path d="M96 76q6-4 12-1M112 75q6-3 12 1" stroke="#6E5A6E" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <path d="M97 85q5 4 10 0M113 85q5 4 10 0" stroke="#2B2A4A" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <path d="M97 85l-2 1.5M123 85l2 1.5" stroke="#2B2A4A" stroke-width="1.4" stroke-linecap="round"/>
+  <circle cx="99" cy="94" r="5.5" fill="#F29DBB" opacity=".45"/><circle cx="121" cy="94" r="5.5" fill="#F29DBB" opacity=".45"/>
+  <path d="M104 100.5q3-2 6 0 3-2 6 0-6 6.5-12 0z" fill="#D61A6A"/>
+  <path d="M109 88q1 5-1 6" stroke="#E2B8AE" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  <circle cx="84.5" cy="94" r="2.8" fill="#FFFFFF" stroke="#D8CDE2"/><circle cx="135.5" cy="94" r="2.8" fill="#FFFFFF" stroke="#D8CDE2"/>
+</svg>`;
+const EMPTY_ART = `<svg viewBox="0 0 120 100" aria-hidden="true"><ellipse cx="60" cy="52" rx="48" ry="40" fill="var(--blush)"/>${star(34, 26, 6, "#C6BDE4")}${star(92, 70, 5, "#D61A6A")}
+  <g transform="translate(36 26) scale(2)" fill="none" stroke="var(--rose)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${P.hanger}</g></svg>`;
+
+const STEP_ICONS = ["bottle", "lipbalm", "pores", "tube", "pump", "wand", "compact", "eye", "brow", "blush", "contour", "sparkle", "lipstick"];
+const CAT_ICONS = { tops: "tshirt", pants: "pants", skirt: "skirt", onepiece: "dress", outer: "coat", shoes: "heel", bag: "bag", acc: "earring" };
+const REMEMBER_ICONS = ["hanger", "face", "flower", "heel", "tshirt", "star"];
+const TYPE_ICONS = { 骨格: ["body", "b-rose"], 顔タイプ: ["face", "b-lilac"], パーソナルカラー: ["palette", "b-mint"] };
+function quickIcon(title) {
+  const t = [["サイズ", "hanger"], ["素材", "tshirt"], ["首元", "tshirt"], ["肩", "tshirt"], ["丈", "dress"], ["ウエスト", "pants"], ["パンツ", "pants"], ["スカート", "skirt"],
+    ["テイスト", "heart"], ["装飾", "ribbon"], ["柄", "flower"], ["色", "palette"], ["靴", "heel"], ["アクセ", "earring"], ["髪型", "face"], ["メイク", "lipstick"], ["髪色", "drop"], ["コーデ", "dress"], ["買い物", "bagq"]];
+  return (t.find(([k]) => title.includes(k)) || [0, "sparkle"])[1];
+}
+
+// ================= 保存（失敗しても動くように） =================
+const store = {
+  get(k, d = null) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+let profile = store.get("ba_profile");
+const lastOpen = store.get("ba_lastOpen");
+const openCount = (store.get("ba_openCount", 0) || 0) + 1;
+store.set("ba_lastOpen", Date.now());
+store.set("ba_openCount", openCount);
+let settings = Object.assign({ model: "claude-opus-5", effort: "medium", theme: "light" }, store.get("ba_settings", {}));
+if (!settings.tuned1) { settings.effort = "medium"; settings.tuned1 = true; store.set("ba_settings", settings); } // 待ち時間が長いとの声で、標準を「ふつう」に変更（2026-09-21）
+function applyTheme() {
+  document.documentElement.dataset.theme = settings.theme;
+  const dark = settings.theme === "dark" || (settings.theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  $("#themeColor")?.setAttribute("content", dark ? "#16141F" : "#FCF5F8");
+}
+
+const idb = {
+  db: null,
+  async open() {
+    if (this.db) return this.db;
+    this.db = await new Promise((res, rej) => {
+      const r = indexedDB.open("ba", 1);
+      r.onupgradeneeded = () => r.result.createObjectStore("history", { keyPath: "id" });
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+    return this.db;
+  },
+  async tx(mode, fn) {
+    const db = await this.open();
+    return new Promise((res, rej) => {
+      const t = db.transaction("history", mode);
+      const out = fn(t.objectStore("history"));
+      t.oncomplete = () => res(out && out.result !== undefined ? out.result : out);
+      t.onerror = () => rej(t.error);
+    });
+  },
+  async all() { try { const r = await this.tx("readonly", s => s.getAll()); return (r || []).sort((a, b) => b.at - a.at); } catch { return []; } },
+  async put(item) {
+    try {
+      await this.tx("readwrite", s => s.put(item));
+      const all = await this.all();
+      for (const old of all.slice(HISTORY_MAX)) await this.tx("readwrite", s => s.delete(old.id));
+    } catch {}
+  },
+  async clear() { try { await this.tx("readwrite", s => s.clear()); } catch {} },
+};
+
+// ================= 小さな道具 =================
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const inline = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+const grade = g => `<span class="grade g-${esc(g)}" aria-label="評価 ${esc(g)}">${esc(g)}</span>`;
+const medal = g => `<div class="medal g-${esc(g)}" aria-label="評価 ${esc(g)} ${esc(GRADE_WORD[g] || "")}"><big>${esc(g)}</big><small>${esc(GRADE_WORD[g] || "")}</small></div>`;
+
+// md をHTMLにする（見出し・表・入れ子の箇条書き・引用）
+function md(text) {
+  const lines = String(text || "").split("\n");
+  let html = "", i = 0;
+  const listStack = [];
+  const closeLists = (to = 0) => { while (listStack.length > to) html += `</li></${listStack.pop().tag}>`; };
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.startsWith("```")) {
+      closeLists(); let code = ""; i++;
+      while (i < lines.length && !lines[i].startsWith("```")) code += lines[i++] + "\n";
+      html += `<pre><code>${esc(code)}</code></pre>`; i++; continue;
+    }
+    const h = line.match(/^(#{1,4}) (.+)/);
+    if (h) { closeLists(); html += `<h4>${inline(h[2])}</h4>`; i++; continue; }
+    if (/^\s*\|/.test(line)) {
+      closeLists();
+      const rows = [];
+      while (i < lines.length && /^\s*\|/.test(lines[i])) rows.push(lines[i++].trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim()));
+      const body = rows.filter((r, k) => k > 0 && !r.every(c => /^:?-+:?$/.test(c)));
+      html += `<table><thead><tr>${rows[0].map(c => `<th>${inline(c)}</th>`).join("")}</tr></thead><tbody>${body.map(r => `<tr>${r.map(c => `<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+      continue;
+    }
+    const li = line.match(/^(\s*)([-*]|\d+\.) (.*)/);
+    if (li) {
+      const depth = Math.floor(li[1].length / 2) + 1;
+      const tag = /\d/.test(li[2]) ? "ol" : "ul";
+      if (depth > listStack.length) { while (listStack.length < depth) { html += `<${tag}><li>`; listStack.push({ tag }); } }
+      else { closeLists(depth); html += `</li><li>`; }
+      html += inline(li[3]); i++; continue;
+    }
+    if (line.startsWith("> ")) { closeLists(); html += `<blockquote>${inline(line.slice(2))}</blockquote>`; i++; continue; }
+    if (!line.trim()) { closeLists(); i++; continue; }
+    if (listStack.length && /^\s+/.test(line)) { html += " " + inline(line.trim()); i++; continue; }
+    closeLists();
+    html += `<p>${inline(line)}</p>`; i++;
+  }
+  closeLists();
+  return `<div class="md">${html}</div>`;
+}
+// 「- **目的**: …」の形の箇条書きを、1項目ずつに分ける（入れ子の行はその項目に含める）
+function blocks(text) {
+  const out = [];
+  for (const line of String(text || "").split("\n")) {
+    const m = line.match(/^- \*\*(.+?)\*\*[:：]?\s*(.*)$/);
+    if (m) out.push({ label: m[1], text: m[2], rest: [] });
+    else if (out.length && line.trim()) out[out.length - 1].rest.push(line);
+    else if (!out.length && line.trim()) out.push({ label: "", text: line.replace(/^\*\*(.+?)\*\*[:：]?\s*/, "$1: "), rest: [] });
+  }
+  return out;
+}
+
+function needProfile(el) {
+  el.innerHTML = `<div class="hero">${HERO}<p class="kicker">MY STYLE NOTE</p><p class="title">はじめに</p>
+    <p class="quote">診断データを読み込むと、<br>早見表・メイク・判定が使えます</p>
+    <div style="text-align:center;margin-top:14px"><button class="btn primary" data-go="settings">${icon("gear")}設定を開く</button></div></div>`;
+}
+
+// ================= タブ =================
+const TABS = [["quick", "早見表", "book"], ["makeup", "メイク", "lipstick"], ["judge", "判定", "camera"], ["settings", "設定", "gear"]];
+$("#tabs").innerHTML = TABS.map(([id, label, ic], k) => `<button data-tab="${id}" ${k === 0 ? 'aria-current="page"' : ""}>${icon(ic)}${label}</button>`).join("");
+function showTab(id) {
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === "v-" + id));
+  document.querySelectorAll("nav.tabs button").forEach(b => b.dataset.tab === id ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+  window.scrollTo(0, 0);
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab],[data-go]");
+  if (t) showTab(t.dataset.tab || t.dataset.go);
+});
+
+// ================= 早見表 =================
+function renderQuick() {
+  const el = $("#quick");
+  if (!profile) return needProfile(el);
+  const s = profile.summary;
+  const types = s.types || [];
+  el.innerHTML = `
+    <div class="hero">
+      ${HERO}
+      <p class="kicker">MY STYLE NOTE</p>
+      <p class="quote">${esc(s.oneLiner)}</p>
+    </div>
+    ${types.length ? `<div class="types">${types.map(t => { const [ic, tone] = TYPE_ICONS[t.kind] || ["sparkle", "b-rose"]; const [main, sub] = t.result.replace(/^1st\s*/, "").split("／"); return `<div class="type"><div class="bub ${tone}">${icon(ic)}</div><div><small>${esc(t.kind)}</small><b>${esc(main)}${sub ? `<em>${esc(sub.replace(/^2nd\s*/, "2nd "))}</em>` : ""}</b></div></div>`; }).join("")}</div>` : ""}
+
+    <h2>${icon("palette")}似合う色</h2>
+    <div class="card">
+      <div class="palette" role="group" aria-label="色見本">${profile.colors.map((c, k) => `<button class="dot" data-sw="${k}" aria-pressed="false" aria-label="${esc(c.name)}" style="background:${esc(c.hex)}"></button>`).join("")}</div>
+      <p class="swInfo" id="swInfo" aria-live="polite"><span class="muted">色をタップすると、使いどころが出ます</span></p>
+      <div class="avoid"><span class="muted" style="border:none">苦手になりやすい</span>${profile.avoidColors.map(c => `<span>${esc(c.replace(/（.*?）/, ""))}</span>`).join("")}</div>
+    </div>
+
+    <h2>${icon("heart")}スタイルのきほん</h2>
+    <div class="tiles">${s.remember.map((r, k) => `<div class="tile"><div class="bub ${["b-rose", "b-lilac", "b-mint"][k % 3]}">${icon(REMEMBER_ICONS[k] || "sparkle")}</div><b>${esc(r.label)}</b><span>${esc(r.rule)}</span></div>`).join("")}</div>
+
+    <h2>${icon("star")}服選びの10ルール</h2>
+    <div class="carousel" aria-label="服選びの10ルール">${s.tenRules.map((r, k) => `<div class="rcard"><div class="no">${String(k + 1).padStart(2, "0")}</div><b>${esc(r.label)}</b><p>${esc(r.rule)}</p></div>`).join("")}</div>
+    <p class="hint">← 横にスワイプ →</p>
+
+    <h2>${icon("book")}くわしいルール</h2>
+    ${[...profile.quick, ...profile.sections].map((q, k) => `<details class="fold"><summary><span class="bub ${["b-rose", "b-lilac", "b-mint"][k % 3]}">${icon(quickIcon(q.title))}</span>${esc(q.title.replace(/（.*）/, ""))}${icon("chev", "chev")}</summary>${md(q.md)}</details>`).join("")}
+    <p class="muted" style="text-align:center;margin-top:16px">診断データ ${esc(profile.updatedAt)} 版</p>`;
+  el.querySelectorAll("[data-sw]").forEach(b => b.addEventListener("click", () => {
+    const c = profile.colors[b.dataset.sw];
+    el.querySelectorAll("[data-sw]").forEach(x => x.setAttribute("aria-pressed", x === b));
+    $("#swInfo").innerHTML = `<b>${esc(c.name)}</b><br><span class="small">${esc(c.use)}</span>`;
+  }));
+}
+
+// ================= メイク =================
+let mkPage = 0;
+const mkChecked = new Set();
+function makeupPages() {
+  const pages = [];
+  for (const s of profile.makeup.steps) {
+    pages.push({ step: s.no, title: s.title, short: s.short, md: s.md });
+    s.subs.forEach((sub, k) => pages.push({ step: s.no, sub: `${s.no}-${k + 1}`, title: sub.title, short: `${s.title} ${k + 1}/${s.subs.length}`, md: sub.md }));
+  }
+  pages.push({ check: true, title: "仕上がりチェック" });
+  return pages;
+}
+function stepBody(p) {
+  const bs = blocks(p.md);
+  const first = bs.slice(0, 2), rest = bs.slice(2);
+  const show = b => `<div class="point">${b.label ? `<b>${esc(b.label)}</b>` : ""}${inline(b.text)}${b.rest.length ? md(b.rest.map(l => l.replace(/^ {2}/, "")).join("\n")) : ""}</div>`;
+  return `${first.map(show).join("")}${rest.length ? `<details class="more"><summary>くわしく見る（あと${rest.length}つ）${icon("chev")}</summary>${rest.map(show).join("")}</details>` : ""}`;
+}
+function renderMakeup() {
+  const el = $("#makeup");
+  if (!profile) return needProfile(el);
+  const m = profile.makeup, pages = makeupPages();
+  mkPage = Math.min(mkPage, pages.length - 1);
+  const p = pages[mkPage];
+  const firstPageOf = no => pages.findIndex(x => x.step === no);
+  el.innerHTML = `
+    <div class="mottos" aria-label="合言葉">${m.mottos.slice(0, 7).map(t => `<span>${esc(t.split("。")[0])}</span>`).join("")}</div>
+    <nav class="stepNav" aria-label="ステップ">${m.steps.map((s, k) => `<button data-page="${firstPageOf(s.no)}" ${p.step === s.no ? 'aria-current="step"' : ""} aria-label="STEP ${esc(s.no)} ${esc(s.title)}"><span class="bub">${icon(STEP_ICONS[k])}</span>${esc(s.no)}</button>`).join("")}<button data-page="${pages.length - 1}" ${p.check ? 'aria-current="step"' : ""} aria-label="仕上がりチェック"><span class="bub">${icon("check")}</span>チェック</button></nav>
+    <div class="progress" aria-hidden="true"><span style="width:${Math.round((mkPage + 1) / pages.length * 100)}%"></span></div>
+    <div class="card ${p.check ? "" : "stepCard"}" id="mkCard">
+      ${p.check ? renderChecklist() : `
+        <div class="big">${icon(STEP_ICONS[p.step - 1])}</div>
+        <p class="no">STEP ${esc(p.sub || p.step)}</p>
+        <h2>${esc(p.title)}</h2>
+        <p class="one">${esc(p.short)}</p>
+        ${stepBody(p)}`}
+    </div>
+    <div class="pager">
+      <button class="btn" id="mkPrev" ${mkPage === 0 ? "disabled" : ""}>前へ</button>
+      <button class="btn primary" id="mkNext" ${mkPage === pages.length - 1 ? "disabled" : ""}>次へ</button>
+    </div>
+    <details class="fold"><summary><span class="bub b-rose">${icon("heart")}</span>なりたいイメージと考え方${icon("chev", "chev")}</summary>${md(m.introMd)}</details>`;
+  const go = n => { mkPage = Math.max(0, Math.min(pages.length - 1, n)); renderMakeup(); window.scrollTo(0, 0); };
+  $("#mkPrev").onclick = () => go(mkPage - 1);
+  $("#mkNext").onclick = () => go(mkPage + 1);
+  el.querySelectorAll("[data-page]").forEach(b => b.onclick = () => go(+b.dataset.page));
+  const cur = el.querySelector(".stepNav [aria-current=step]");
+  if (cur) cur.parentElement.scrollLeft = cur.offsetLeft - cur.parentElement.clientWidth / 2 + cur.clientWidth / 2;
+  let sx = null;
+  const card = $("#mkCard");
+  card.addEventListener("touchstart", e => { sx = e.touches[0].clientX; }, { passive: true });
+  card.addEventListener("touchend", e => {
+    if (sx == null) return;
+    const dx = e.changedTouches[0].clientX - sx; sx = null;
+    if (Math.abs(dx) > 60) go(mkPage + (dx < 0 ? 1 : -1));
+  });
+  el.querySelectorAll("[data-ck]").forEach(c => c.onclick = () => {
+    const on = c.getAttribute("aria-pressed") !== "true";
+    c.setAttribute("aria-pressed", on);
+    on ? mkChecked.add(c.dataset.ck) : mkChecked.delete(c.dataset.ck);
+    updateCheckCount();
+  });
+  $("#ckReset")?.addEventListener("click", () => { mkChecked.clear(); renderMakeup(); });
+  $("#ckAsk")?.addEventListener("click", () => { judgeState.tab = "ai"; setMode("face"); showTab("judge"); });
+}
+const CK_ICONS = { ベース: "pump", アイメイク: "eye", 眉: "brow", チーク: "blush", シェーディング: "contour", ハイライト: "sparkle", 全体: "mirror" };
+function renderChecklist() {
+  const all = profile.makeup.checklist;
+  const total = all.reduce((n, c) => n + c.items.length, 0);
+  return `<div style="text-align:center"><div class="stepCard" style="padding:0"><div class="big">${icon("mirror")}</div></div>
+    <h2 style="justify-content:center;margin:0">仕上がりチェック</h2><p class="muted">目を開けて、正面から鏡で見てタップ</p>
+    <p id="ckCount" class="serif" aria-live="polite" style="font-size:20px;margin:6px 0 0">${mkChecked.size} / ${total}</p></div>
+    ${all.map(c => `<div class="cksec"><span class="bub b-lilac" style="width:30px;height:30px;border-radius:10px;display:grid;place-items:center">${icon(CK_ICONS[c.section] || "sparkle")}</span>${esc(c.section)}</div>
+      <div class="ckgrid">${c.items.map(it => { const id = c.section + "/" + it; return `<button class="ck" data-ck="${esc(id)}" aria-pressed="${mkChecked.has(id)}"><span class="box">${icon("check")}</span>${esc(it)}</button>`; }).join("")}</div>`).join("")}
+    <div class="row" style="margin-top:18px"><button class="btn" id="ckReset">リセット</button><button class="btn primary" id="ckAsk" style="flex:1">${icon("camera")}写真でAIに見てもらう</button></div>`;
+}
+function updateCheckCount() {
+  const total = profile.makeup.checklist.reduce((n, c) => n + c.items.length, 0);
+  const el = $("#ckCount"); if (el) el.textContent = `${mkChecked.size} / ${total}`;
+}
+
+// ================= 判定 =================
+const judgeState = { tab: "ai", mode: "item", photos: {}, facts: {}, picker: null, picked: null, white: null, product: "", stage: "", startedAt: 0, note: "", shopping: false, busy: false, error: "", current: null, rule: { cat: "tops", sel: {} } };
+function setMode(id) { judgeState.mode = id; judgeState.photos = {}; judgeState.facts = {}; judgeState.picker = null; judgeState.picked = null; judgeState.white = null; judgeState.product = ""; judgeState.current = null; judgeState.error = ""; renderJudge(); }
+
+function renderJudge() {
+  const el = $("#judge");
+  if (!profile) return needProfile(el);
+  el.innerHTML = `
+    <h1>これ、似合う？</h1>
+    <div class="seg" role="group" aria-label="判定のしかた">
+      <button data-jt="ai" aria-pressed="${judgeState.tab === "ai"}">${icon("sparkle")}AIに聞く</button>
+      <button data-jt="rule" aria-pressed="${judgeState.tab === "rule"}">${icon("book")}ルールで判定</button>
+    </div>
+    <div id="jBody"></div>
+    <h2>${icon("clock")}これまでの判定</h2>
+    <div class="card" id="hist"><p class="muted">読み込み中…</p></div>`;
+  el.querySelectorAll("[data-jt]").forEach(b => b.onclick = () => { judgeState.tab = b.dataset.jt; renderJudge(); });
+  judgeState.tab === "ai" ? renderAi() : renderRule();
+  renderHistory();
+}
+
+// ---- ルール判定 ----
+function ruleResult() {
+  const { cat, sel } = judgeState.rule;
+  const attrs = profile.judge.attributes.filter(a => a.appliesTo.includes(cat));
+  const picked = attrs.filter(a => sel[a.id]).map(a => ({ a, o: a.options.find(o => o.id === sel[a.id]) }));
+  const over = {}, notes = [];
+  for (const c of profile.judge.combos) {
+    if (Object.entries(c.when).every(([k, v]) => sel[k] === v && attrs.some(a => a.id === k))) { Object.assign(over, c.set); notes.push(c.note); }
+  }
+  const items = picked.map(({ a, o }) => ({ a, o, g: over[a.id] || o.grade }));
+  const overall = items.length ? items.reduce((m, x) => GRADE_ORDER[x.g] < GRADE_ORDER[m] ? x.g : m, "◎") : null;
+  return { attrs, items, overall, notes };
+}
+function renderRule() {
+  const body = $("#jBody");
+  const { cat, sel } = judgeState.rule;
+  const r = ruleResult();
+  const weak = r.items.filter(x => GRADE_ORDER[x.g] <= 1);
+  body.innerHTML = `
+    <div class="cats" role="group" aria-label="種類">${profile.judge.categories.map(c => `<button class="cat" data-cat="${esc(c.id)}" aria-pressed="${c.id === cat}">${icon(CAT_ICONS[c.id])}${esc(c.label)}</button>`).join("")}</div>
+    <div class="card" aria-live="polite">
+      ${r.overall ? `<div class="verdict">${medal(r.overall)}<p>${r.overall === "◎" || r.overall === "○" ? "あなたのルールに合っています" : r.overall === "△" ? "ひと工夫で着こなせます" : "避けたい組み合わせです"}</p></div>
+        ${weak.map(x => `<div class="item">${grade(x.g)} <b>${esc(x.o.label)}</b><span class="rule">${esc(x.a.source)}${x.o.note ? "｜" + esc(x.o.note) : ""}</span>${x.o.fix && x.g !== "×" ? `<span class="fix">${esc(x.o.fix)}</span>` : ""}</div>`).join("")}
+        ${r.notes.map(n => `<p class="small" style="color:var(--rose)">${icon("sparkle")} ${esc(n)}</p>`).join("")}
+        ${r.items.length < r.attrs.length ? `<p class="muted">あと ${r.attrs.length - r.items.length} 項目選ぶと、より正確に</p>` : ""}`
+      : `<div class="empty">${EMPTY_ART}<p class="muted">下の項目をタップすると<br>◎○△× が出ます</p></div>`}
+    </div>
+    <div class="card">
+    ${r.attrs.map(a => `<div class="attr"><b>${esc(a.label)}<span>${esc(a.source)}</span></b>
+      <div class="chips" role="group" aria-label="${esc(a.label)}">${a.options.map(o => `<button class="chip" data-a="${esc(a.id)}" data-o="${esc(o.id)}" aria-pressed="${sel[a.id] === o.id}">${o.hex ? `<span class="sw" style="background:${esc(o.hex)}"></span>` : ""}${esc(o.label)}<span class="g">${esc(o.grade)}</span></button>`).join("")}</div></div>`).join("")}
+    <button class="btn block" id="ruleReset" style="margin-top:8px">選択をリセット</button></div>`;
+  body.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => { judgeState.rule.cat = b.dataset.cat; renderRule(); });
+  body.querySelectorAll("[data-a]").forEach(b => b.onclick = () => {
+    const { a, o } = b.dataset;
+    judgeState.rule.sel[a] = sel[a] === o ? undefined : o;
+    const y = window.scrollY; renderRule(); window.scrollTo(0, y);
+  });
+  $("#ruleReset").onclick = () => { judgeState.rule.sel = {}; renderRule(); };
+}
+
+// ---- AI判定 ----
+function renderAi() {
+  const body = $("#jBody");
+  const mode = MODES.find(m => m.id === judgeState.mode);
+  const hasKey = !!store.get("ba_apiKey");
+  const cur = judgeState.current;
+  body.innerHTML = `
+    <div class="modes" role="group" aria-label="何を見るか">${MODES.map(m => `<button class="mode" data-mode="${m.id}" aria-pressed="${m.id === mode.id}"><span class="bub ${m.tone}">${icon(m.icon)}</span>${esc(m.label)}</button>`).join("")}</div>
+    ${!hasKey ? `<div class="notice">${icon("key")} AI判定には Claude の APIキーが必要です <button class="btn" data-go="settings" style="margin-top:8px;min-height:38px">設定を開く</button></div>` : ""}
+    ${cur ? "" : `
+    <div class="card">
+      ${mode.slots.map((s, k) => { const list = judgeState.photos[k] || []; return `<div class="slotTitle"><span>${esc(s.label)}</span><span class="muted">${list.length}/${s.max}</span></div>
+        ${list.length ? `<div class="photos">${list.map((p, j) => `<div class="photo"><img src="${p.thumb}" alt="${esc(s.label)} ${j + 1}"><button data-rm="${k}:${j}" aria-label="この写真を外す">×</button></div>`).join("")}</div>` : ""}
+        ${list.length < s.max ? `<div class="drop">${icon(list.length ? "plus" : "photo")}<p>${list.length ? "もう1枚足す" : k === 0 ? esc(TIPS[mode.id]) : "撮るか、写真を選ぶ"}</p><div class="row" style="justify-content:center">
+          <label class="btn primary">${icon("camera")}撮る<input type="file" accept="image/*" capture="${s.front ? "user" : "environment"}" data-slot="${k}" class="sr"></label>
+          <label class="btn">写真を選ぶ<input type="file" accept="image/*" ${s.max > 1 ? "multiple" : ""} data-slot="${k}" class="sr"></label></div></div>` : ""}`; }).join("")}
+      ${mode.product ? `<label for="product" class="muted" style="display:block;margin-top:14px">${icon("bagq")} 商品名・品番（分かれば）</label>
+        <input type="text" id="product" value="${esc(judgeState.product)}" placeholder="例: ブランド名 商品名 色番号" autocomplete="off">
+        <p class="muted" style="margin:4px 0 0">写真だけ・品番だけ・両方、どれでも判定できます。品番を入れると、AIが商品の色や素材を調べてから判定します（少し時間と料金が増えます）</p>` : ""}
+      ${mode.id !== "face" && (judgeState.photos[0] || []).length ? renderPicker() : ""}
+      ${FACTS.some(f => f.modes.includes(mode.id)) ? `<p class="muted" style="margin:14px 0 4px">分かっていることをタップ（写真で見えにくい所をAIに伝えます）</p>
+        ${FACTS.filter(f => f.modes.includes(mode.id)).map(f => `<div class="attr" style="margin:8px 0"><b>${esc(f.label)}</b><div class="chips">${f.opts.map(o => `<button class="chip" data-fact="${f.id}" data-v="${esc(o)}" aria-pressed="${judgeState.facts[f.id] === o}">${esc(o)}</button>`).join("")}</div></div>`).join("")}` : ""}
+      ${mode.id === "face" && mkChecked.size ? `<p class="small" style="color:var(--good)">${icon("ok")} セルフチェックの ${mkChecked.size} 項目も一緒に送ります</p>` : ""}
+      <label for="note" class="muted" style="display:block;margin-top:14px">ひと言メモ（なくてもOK）</label>
+      <textarea id="note" placeholder="${mode.id === "item" ? "例: 通勤用。素材は厚め" : mode.id === "face" ? "例: チークが濃すぎない？" : "例: 週末のお出かけ用"}">${esc(judgeState.note)}</textarea>
+      ${mode.shopping ? `<label class="toggle"><input type="checkbox" id="shop" ${judgeState.shopping ? "checked" : ""}>${icon("bagq")}買うか迷っている</label>` : ""}
+      ${judgeState.error ? `<div class="error" role="alert">${esc(judgeState.error)}</div>` : ""}
+      ${judgeState.busy ? `<div class="loading" role="status">${icon("sparkle")}${judgeState.stage === "search" ? "商品を調べています…" : "あなたのルールと照らし合わせています…"}<br><span id="elapsed">0秒</span></div>` :
+        `<button class="btn primary block" id="send" ${hasKey ? "" : "disabled"} style="margin-top:8px">${icon("sparkle")}AIに見てもらう</button>`}
+    </div>`}
+    ${cur ? renderConversation(cur, true) : ""}`;
+  body.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+  bindPicker(body);
+  body.querySelectorAll("[data-fact]").forEach(b => b.onclick = () => {
+    const { fact, v } = b.dataset;
+    judgeState.facts[fact] = judgeState.facts[fact] === v ? undefined : v;
+    const y = window.scrollY; renderAi(); window.scrollTo(0, y);
+  });
+  body.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [k, j] = b.dataset.rm.split(":").map(Number); judgeState.photos[k].splice(j, 1); renderAi(); });
+  body.querySelectorAll("input[type=file]").forEach(inp => inp.onchange = () => addPhotos(+inp.dataset.slot, inp.files));
+  $("#note")?.addEventListener("input", e => judgeState.note = e.target.value);
+  $("#product")?.addEventListener("input", e => judgeState.product = e.target.value);
+  $("#shop")?.addEventListener("change", e => judgeState.shopping = e.target.checked);
+  $("#send")?.addEventListener("click", () => startJudge());
+  bindConversation(body);
+}
+
+function pickedColor() {
+  const p = judgeState.picked; if (!p) return null;
+  const w = judgeState.white;
+  const rgb = w ? p.map((v, i) => v * 245 / Math.max(w[i], 1)) : p;
+  return describeColor(rgbToHex(rgb));
+}
+function renderPicker() {
+  const pk = judgeState.picker, c = pickedColor();
+  const photos = judgeState.photos[0];
+  const chip = c => `<span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:${c};box-shadow:0 0 0 1px var(--line);vertical-align:middle"></span>`;
+  return `<div class="card" style="background:var(--surface2);box-shadow:none;margin:14px 0 0;padding:14px">
+    <b class="small">${icon("eye")} 色をタップして取る（色を正確にしたいとき）</b>
+    ${c ? `<div class="row" style="margin-top:8px">${chip(c.hex)}<span class="small"><b>${esc(c.name)}系</b>（${esc(c.hex)}）${c.traits.length ? "・" + esc(c.traits.join("・")) : ""}${judgeState.white ? "・白で補正済み" : ""}<br>${c.near ? `色見本の「${esc(c.near.name)}」に近い` : "13色の色見本とは離れている"}</span></div>` : ""}
+    ${pk ? `
+      ${photos.length > 1 ? `<div class="chips" style="margin:8px 0">${photos.map((p, j) => `<button class="chip" data-pk-photo="${j}" aria-pressed="${pk.photo === j}">${j + 1}枚目</button>`).join("")}</div>` : ""}
+      <div class="seg" role="group" aria-label="何をタップするか" style="margin:8px 0;box-shadow:none;background:var(--surface)">
+        <button data-pk-target="color" aria-pressed="${pk.target === "color"}">色を取る</button>
+        <button data-pk-target="white" aria-pressed="${pk.target === "white"}">白い紙を取る</button>
+      </div>
+      <canvas id="pickCanvas" style="width:100%;border-radius:14px;touch-action:manipulation;cursor:crosshair" aria-label="タップして色を取る写真"></canvas>
+      <p class="muted" style="margin:6px 0 0">${pk.target === "color" ? "知りたい色の部分をタップ" : "白い紙（白い壁）の部分をタップ。照明の色のずれを直します"}</p>
+      <div class="row" style="margin-top:8px"><button class="btn" id="pkClear" style="min-height:38px">やり直す</button><button class="btn primary" id="pkClose" style="min-height:38px">閉じる</button></div>`
+    : `<div class="row" style="margin-top:8px"><button class="btn" id="pkOpen" style="min-height:38px">${c ? "取り直す" : "写真から色を取る"}</button></div>`}
+  </div>`;
+}
+function bindPicker(root) {
+  $("#pkOpen", root)?.addEventListener("click", () => { judgeState.picker = { photo: 0, target: "color" }; renderAi(); });
+  $("#pkClose", root)?.addEventListener("click", () => { judgeState.picker = null; renderAi(); });
+  $("#pkClear", root)?.addEventListener("click", () => { judgeState.picked = null; judgeState.white = null; renderAi(); });
+  root.querySelectorAll("[data-pk-photo]").forEach(b => b.onclick = () => { judgeState.picker.photo = +b.dataset.pkPhoto; renderAi(); });
+  root.querySelectorAll("[data-pk-target]").forEach(b => b.onclick = () => { judgeState.picker.target = b.dataset.pkTarget; renderAi(); });
+  const cv = $("#pickCanvas", root); if (!cv) return;
+  const img = new Image();
+  img.onload = () => {
+    cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+    const ctx = cv.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0);
+    cv.onclick = e => {
+      const r = cv.getBoundingClientRect();
+      const x = Math.round((e.clientX - r.left) * cv.width / r.width), y = Math.round((e.clientY - r.top) * cv.height / r.height);
+      const n = 4, d = ctx.getImageData(Math.max(0, x - n), Math.max(0, y - n), n * 2 + 1, n * 2 + 1).data;
+      const sum = [0, 0, 0]; let cnt = 0;
+      for (let i = 0; i < d.length; i += 4) { sum[0] += d[i]; sum[1] += d[i + 1]; sum[2] += d[i + 2]; cnt++; }
+      const avg = sum.map(v => v / cnt);
+      if (judgeState.picker.target === "white") { judgeState.white = avg; judgeState.picker.target = "color"; } else judgeState.picked = avg;
+      const y0 = window.scrollY; renderAi(); window.scrollTo(0, y0);
+    };
+  };
+  img.src = judgeState.photos[0][judgeState.picker.photo].full;
+}
+
+async function addPhotos(slot, files) {
+  const mode = MODES.find(m => m.id === judgeState.mode);
+  const list = judgeState.photos[slot] || (judgeState.photos[slot] = []);
+  judgeState.error = "";
+  for (const f of files) {
+    if (list.length >= mode.slots[slot].max) break;
+    try { list.push({ full: await resize(f, 1280, 0.85), thumb: await resize(f, 400, 0.75) }); }
+    catch { judgeState.error = "写真を読み込めませんでした。別の写真で試してください。"; }
+  }
+  renderAi();
+}
+async function resize(file, maxSide, quality) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL("image/jpeg", quality);
+  } finally { URL.revokeObjectURL(url); }
+}
+
+// ---- 会話（結果と追加の質問） ----
+function renderConversation(conv, live) {
+  const turns = conv.turns.map((t, k) => `
+    ${k > 0 ? `<p class="small" style="margin-top:4px"><b>${icon("help")} ${esc(t.question)}</b></p>` : ""}
+    ${t.result ? renderResult(t.result) : `<div class="error">${esc(t.error || "答えを受け取れませんでした")}</div>`}`).join(`<div class="qa"></div>`);
+  return `<div class="card">
+    ${conv.thumbs.length ? `<div class="photos" style="justify-content:flex-start">${conv.thumbs.map(t => `<div class="photo" style="width:64px;height:64px"><img src="${t}" alt="送った写真"></div>`).join("")}</div>` : ""}
+    <p class="muted">${esc(MODES.find(m => m.id === conv.mode)?.label || "")}${conv.product ? "・" + esc(conv.product) : ""}${conv.note ? "・" + esc(conv.note) : ""}</p>
+    ${conv.picked ? `<p class="small" style="margin:0 0 6px"><span style="display:inline-block;width:16px;height:16px;border-radius:50%;background:${esc(conv.picked.hex)};box-shadow:0 0 0 1px var(--line);vertical-align:-3px"></span> 取った色: ${esc(conv.picked.name)}系（${esc(conv.picked.hex)}）</p>` : ""}
+    ${conv.productInfo ? `<details class="more" style="margin:0 0 6px"><summary>調べた商品情報${icon("chev")}</summary><div class="item">${esc(conv.productInfo)}</div></details>` : ""}
+    ${turns}
+    ${live ? `<div class="qa">
+      ${judgeState.error ? `<div class="error" role="alert">${esc(judgeState.error)}</div>` : ""}
+      <label for="follow" class="muted">続けて聞く（同じ写真のまま）</label>
+      <textarea id="follow" placeholder="例: 黒だったらどう？／靴を変えるなら？"></textarea>
+      ${judgeState.busy ? `<div class="loading" role="status">${icon("sparkle")}考えています… <span id="elapsed">0秒</span></div>` :
+        `<div class="row" style="margin-top:8px"><button class="btn primary" id="ask" style="flex:1">聞く</button><button class="btn" id="newJudge">新しく見る</button></div>`}
+    </div>` : ""}
+  </div>`;
+}
+function bindConversation(root) {
+  $("#ask", root)?.addEventListener("click", () => { const q = $("#follow").value.trim(); if (!q) { judgeState.error = "質問を入力してください"; renderAi(); return; } followUp(q); });
+  $("#newJudge", root)?.addEventListener("click", () => setMode(judgeState.mode));
+}
+function renderResult(r) {
+  const sec = (title, ic, arr, fn) => arr && arr.length ? `<div class="rs"><h3>${icon(ic)}${title}</h3>${arr.map(fn).join("")}</div>` : "";
+  const more = [
+    sec("合っているところ", "ok", r.matches, x => `<div class="item">${esc(x.point)}<span class="rule">${esc(x.rule)}</span></div>`),
+    sec("気になるところ", "alert", r.mismatches, x => `<div class="item">${esc(x.point)}<span class="rule">${esc(x.rule)}</span>${x.fix ? `<span class="fix">${esc(x.fix)}</span>` : ""}</div>`),
+    r.checklist ? sec("仕上がりチェック", "mirror", r.checklist, x => `<div class="item">${grade(x.result === "?" ? "？" : x.result)} <b>${esc(x.item)}</b><span class="rule">${esc(x.section)}${x.comment ? "｜" + esc(x.comment) : ""}</span></div>`) : "",
+    r.shopping ? `<div class="rs"><h3>${icon("bagq")}買う前に</h3><div class="item">${esc(r.shopping.threeOutfits)}</div>${r.shopping.questions.map(q => `<div class="item">${icon("help")} ${esc(q)}</div>`).join("")}</div>` : "",
+    sec("写真では分からないこと", "help", r.unknowns, x => `<div class="item muted">${esc(x)}</div>`),
+  ].join("");
+  return `
+    <div class="verdict">${medal(r.overall)}<p>${esc(r.headline)}</p></div>
+    ${r.observed ? `<p class="muted" style="margin:10px 0 0">${icon("eye")} AIに見えたもの: ${esc(r.observed)}</p>` : ""}
+    ${r.advice ? `<div class="advice">${icon("sparkle")}<span>${esc(r.advice)}</span></div>` : ""}
+    ${r.idea ? `<div class="advice" style="background:var(--lilac);margin-top:8px">${icon("heart")}<span><span class="muted" style="display:block;font-weight:400">遊ぶなら</span>${esc(r.idea)}</span></div>` : ""}
+    ${more ? `<details class="more"><summary>くわしく見る${icon("chev")}</summary>${more}</details>` : ""}`;
+}
+
+// ---- Claude API ----
+const RESULT_SCHEMA = {
+  type: "object", additionalProperties: false,
+  required: ["observed", "overall", "headline", "advice", "idea", "matches", "mismatches", "shopping", "checklist", "unknowns"],
+  properties: {
+    observed: { type: "string" },
+    overall: { type: "string", enum: ["◎", "○", "△", "×"] },
+    headline: { type: "string" },
+    advice: { type: "string" },
+    idea: { type: "string" },
+    matches: { type: "array", items: { type: "object", additionalProperties: false, required: ["point", "rule"], properties: { point: { type: "string" }, rule: { type: "string" } } } },
+    mismatches: { type: "array", items: { type: "object", additionalProperties: false, required: ["point", "rule", "fix"], properties: { point: { type: "string" }, rule: { type: "string" }, fix: { type: "string" } } } },
+    shopping: { anyOf: [{ type: "null" }, { type: "object", additionalProperties: false, required: ["threeOutfits", "questions"], properties: { threeOutfits: { type: "string" }, questions: { type: "array", items: { type: "string" } } } }] },
+    checklist: { anyOf: [{ type: "null" }, { type: "array", items: { type: "object", additionalProperties: false, required: ["section", "item", "result", "comment"], properties: { section: { type: "string" }, item: { type: "string" }, result: { type: "string", enum: ["○", "△"] }, comment: { type: "string" } } } }] },
+    unknowns: { type: "array", items: { type: "string" } },
+  },
+};
+const SYSTEM_BASE = `あなたは、この人専属のスタイリスト兼ビューティーアドバイザーです。
+あとに続く「本人の診断ルール」（骨格・顔タイプ・パーソナルカラー）と「本人のメイクレッスン」を踏まえて、写真の服・小物・コスメ・コーデ・メイクについて、プロとして総合的に判断し、提案します。
+
+考え方:
+- 診断ルールは「似合いやすい傾向」であって、守らなければいけない決まりではない。ルールの照合ではなく、実際に身につけたときにどう見えるかで判断する
+- 次の3つの軸を分けて考え、最後に総合する。軸の重み・色のカギ・本人の診断の核は、診断ルールの「AI判定での考え方」に従う:
+  1. 顔タイプ（テイスト）
+  2. 骨格（形と重さだけ）: サイズ感・シルエット・丈・ウエスト位置・生地の厚みと重さ
+  3. 色: 顔に近いほど重く見る。色の名前より、その色が診断ルールの「色のカギ」に合うかで判断する
+- 骨格は「形と重さ」の得意・不得意を表すだけで、テイストとは関係ない。骨格の種類でカジュアル向きかどうかを決めない。テイストは顔タイプで判断する
+- 形や生地の厚みが骨格に合っていても、テイストが顔タイプに合わないなら△以下にする
+- テイストが合わないアイテムも、合わせ方で補えるなら、何を足せば○になるかを具体的に答える
+- ワンピースやセットアップのように1枚でコーデが決まるアイテムは、全身のテイストとして判断する
+- 弱い点があっても、ほかの良い点や合わせ方で補えるなら、それも評価する
+- 顔から近いほど色の影響は大きい。トップス・襟元・ストール・アクセ・リップ・チークは色のルールを重く見て、ボトムス・靴・バッグは色の自由度が高いと考える
+- 色は、診断ルールの色見本と得意な色から、そのアイテムと本人に合う色を幅広く考える。毎回同じ色や同じ提案をくり返さない
+- 評価の目安: ◎＝テイスト・形・色がそろって、本人の魅力が引き立つときだけ／○＝問題なく使える／△＝合わせ方の工夫が必要（テイストがずれているときもここ）／×＝顔まわりで明らかに損をするとき。色の小さなずれは、○＋ひと工夫で答える
+
+答え方:
+- rule には、判断の決め手になった診断の観点を短く書く（例:「骨格: 丈のバランスが合う」）
+- mismatches の fix には、具体的な合わせ方を書く。アイテム名・色名を入れる
+- advice には、いちばん効く「次の一手」を1文で書く
+- idea には、ルールから少し外れてもおしゃれに楽しめる取り入れ方を1文で書く（例:「あえて黒を主役にして、パールと明るいリップで柔らかさを足す」）。遊び心を大事に
+- 中学生でも分かる日本語で、短く書く。各項目は1文・40字くらいまで。専門用語には一言説明を添える
+- matches と mismatches は、大事なものから最大2つずつ。unknowns は判定が変わるほど大事なものだけ最大1つ（なければ空）
+- 顔や体型そのものの良し悪しは評価しない。見るのは、服・色・メイクの選び方と合わせ方だけ
+- headline は結論をひと言で。続けて質問されたときは、headline で質問に直接答える
+
+色と情報の読み方:
+- 判定の前に、observed に「写真から見えた色・質感・形」を、ルールと比べずにそのまま短く書く（例:「グレーがかったベージュ。マット」）。似合う色の名前に寄せて読まない
+- 室内の照明で黄色っぽく写っているなど、色がずれていそうなときは observed にそう書く。白い紙や白い壁が写っていれば、それを白の基準にして色を読む
+- 色の情報の優先順位: 「本人が写真をタップして取った色」＞「調べた商品情報」＞「本人が伝えた色味」＞ 写真の見え方。タップで取った色があるときは、写真の見え方で別の色名に言いかえない
+- 本人が伝えた情報（生地の厚み・サイズ感など）は、写真より優先して事実として扱う
+- 写真が遠い・暗いなどで見えにくくても、見える範囲で判断する
+- 「調べた商品情報」があるときは、色・質感・素材はそれを優先し、写真は形や組み合わせの確認に使う。写真がなく商品情報だけのときは、商品情報から判断する。商品を特定できなかったときは、分かる範囲で判断し、unknowns に「商品を特定できなかった」と書く
+
+判定の種類ごと:
+- 服・小物: 上の考え方で判断する。checklist は null
+- 全身コーデ: 上の考え方に加えて、配色のコントラスト（明るい色と濃い色・鮮やかな色の差、メリハリ）を必ず確認し、その評価を matches か mismatches に必ず1つ入れる。全身が同じような明るさ・くすんだ色どうしでぼやけているなら mismatches に入れ、どこで差をつけるかを fix に書く。ただし、診断ルールの「コーデ全体の判定ルール」にも合わせる。checklist は null
+- コスメ: 色と質感を中心に判断し、メイクレッスンのどのステップでどう使うかも一言添える。checklist は null
+- メイク後: メイクレッスンの「仕上がりチェック」の各項目を checklist で返す（写真で判断できる項目だけ）。overall は全体の出来
+- 「買うか迷っている」とき: shopping に、手持ちと3コーデ組めそうか（手持ちの情報はないので、合わせやすいアイテムの例で）と、買う前に確かめたいことを入れる。それ以外は shopping を null`;
+
+// Claude API は fetch で直接呼ぶ（外から読み込むライブラリを使わない。セキュリティルール S-61）
+class ApiError extends Error {
+  constructor(status, body) { super(body?.error?.message || `HTTP ${status}`); this.status = status; this.body = body; }
+}
+class ConnectionError extends Error {}
+const wait = ms => new Promise(r => setTimeout(r, ms));
+// やり直すまでの待ち時間。サーバーの指定（retry-after）があれば従い、なければ 0.5秒→1秒 と延ばす
+function retryDelay(attempt, headers) {
+  const sec = parseFloat(headers?.get("retry-after") ?? "");
+  if (sec > 0 && sec <= 60) return sec * 1000;
+  return Math.min(500 * 2 ** attempt, 8000) * (1 - Math.random() * 0.25);
+}
+// SDK と同じく、408・409・429・500番台と通信エラーは2回までやり直す。待ちは1回10分まで
+async function createMessage(params) {
+  const key = store.get("ba_apiKey");
+  if (!key) throw new Error("APIキーが設定されていません");
+  for (let attempt = 0; ; attempt++) {
+    let res;
+    try {
+      res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-api-key": key,
+          "anthropic-version": "2023-06-01",
+          "anthropic-beta": API_BETAS.join(","),
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
+        body: JSON.stringify(params),
+        signal: AbortSignal.timeout(10 * 60 * 1000),
+      });
+    } catch {
+      if (attempt < 2) { await wait(retryDelay(attempt)); continue; }
+      throw new ConnectionError("通信できませんでした");
+    }
+    if (res.ok) return res.json();
+    const hint = res.headers.get("x-should-retry");
+    const retryable = hint === "true" || (hint !== "false" && (res.status === 408 || res.status === 409 || res.status === 429 || res.status >= 500));
+    if (retryable && attempt < 2) { await wait(retryDelay(attempt, res.headers)); continue; }
+    let body = null;
+    try { body = await res.json(); } catch {}
+    throw new ApiError(res.status, body);
+  }
+}
+function errorText(e) {
+  if (e instanceof ApiError) {
+    if (e.status === 401) return "APIキーが正しくありません。設定で入れ直してください。";
+    if (e.status === 403) return "このAPIキーでは使えません（権限がありません）。";
+    if (e.status === 429) return "混み合っているか、利用上限に達しました。少し待ってから試してください。";
+    if (e.status === 400) return "送った内容でエラーになりました: " + (e.body?.error?.message || e.message);
+    return `AI側でエラーになりました（${e.status}）。少し待ってから試してください。`;
+  }
+  if (e instanceof ConnectionError) return "通信できませんでした。電波のよい場所で試してください。";
+  return e?.message || "うまくいきませんでした";
+}
+function recordUsage(model, u) {
+  if (!u) return;
+  const p = MODELS[model] || MODELS["claude-opus-5"];
+  const usd = ((u.input_tokens || 0) * p.inPrice + (u.cache_creation_input_tokens || 0) * p.inPrice * 1.25 + (u.cache_read_input_tokens || 0) * p.inPrice * 0.1 + (u.output_tokens || 0) * p.outPrice) / 1e6
+    + (u.server_tool_use?.web_search_requests || 0) * 0.01; // Web検索は1回 $0.01
+  const month = new Date().toISOString().slice(0, 7);
+  const all = store.get("ba_usage", {});
+  const m = all[month] || { count: 0, usd: 0 };
+  m.count++; m.usd += usd; all[month] = m;
+  store.set("ba_usage", all);
+}
+const SEARCH_SYSTEM = `あなたは商品情報を調べる係です。渡された商品名・品番を Web 検索し、公式サイトや信頼できる販売サイトの情報から、次を日本語で短く（200字以内）まとめてください。
+- 商品名（ブランド）と色名・色番号
+- 色の説明（何系の色か、黄み／青み、明るさ・くすみ具合）
+- コスメなら質感・仕上がり（ツヤ・マット・シアー・ラメなど）、服なら素材・生地の厚み・シルエット・丈
+商品を特定できないときは「特定できませんでした」とだけ書く。推測で埋めない。候補が複数あるときは、いちばん当てはまるものと、その理由を一言。`;
+// 品番から商品情報を調べる。検索に渡すのは品番（商品名）だけ
+async function searchProduct(product, mode) {
+  let messages = [{ role: "user", content: `種類: ${mode.label}\n商品名・品番: ${product}` }];
+  for (let i = 0; i < 4; i++) {
+    const res = await createMessage({
+      model: settings.model,
+      max_tokens: 4000,
+      fallbacks: "default",
+      output_config: { effort: "low" },
+      system: SEARCH_SYSTEM,
+      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 3 }],
+      messages,
+    });
+    recordUsage(settings.model, res.usage);
+    if (res.stop_reason === "pause_turn") { messages = [...messages, { role: "assistant", content: res.content }]; continue; }
+    if (res.stop_reason === "refusal") return "特定できませんでした";
+    const text = res.content.filter(b => b.type === "text").map(b => b.text).join("").trim();
+    return text || "特定できませんでした";
+  }
+  return "特定できませんでした";
+}
+async function callClaude(messages) {
+  const res = await createMessage({
+    model: settings.model,
+    max_tokens: 16000,
+    fallbacks: "default",
+    thinking: { type: "adaptive" },
+    output_config: { effort: settings.effort, format: { type: "json_schema", schema: RESULT_SCHEMA } },
+    system: [
+      { type: "text", text: SYSTEM_BASE },
+      { type: "text", text: `# 本人の診断ルール\n\n${profile.aiText.style}\n\n# 本人のメイクレッスン\n\n${profile.aiText.makeup}`, cache_control: { type: "ephemeral" } },
+    ],
+    messages,
+  });
+  recordUsage(settings.model, res.usage);
+  if (res.stop_reason === "refusal") throw new Error("AIがこの内容には答えられませんでした。写真を変えて試してください。");
+  if (res.stop_reason === "max_tokens") throw new Error("答えが長くなりすぎて途中で切れました。もう一度試してください。");
+  const text = [...res.content].reverse().find(b => b.type === "text")?.text;
+  if (!text) throw new Error("答えを受け取れませんでした");
+  return { result: JSON.parse(text), raw: text };
+}
+function firstMessage(conv) {
+  const mode = MODES.find(m => m.id === conv.mode);
+  const content = [];
+  conv.images.forEach(img => {
+    content.push({ type: "text", text: `【${img.label}】` });
+    content.push({ type: "image", source: { type: "base64", media_type: "image/jpeg", data: img.data.split(",")[1] } });
+  });
+  let text = `判定の種類: ${mode.label}\n`;
+  if (conv.product) text += `商品名・品番: ${conv.product}\n調べた商品情報: ${conv.productInfo || "特定できませんでした"}\n`;
+  if (!conv.images.length) text += "写真はありません。商品情報だけで判定してください。\n";
+  if (conv.note) text += `本人のメモ: ${conv.note}\n`;
+  if (mode.shopping) text += `買うか迷っている: ${conv.shopping ? "はい" : "いいえ"}\n`;
+  if (conv.selfCheck?.length) text += `本人がセルフチェックで ✓ した項目: ${conv.selfCheck.join("／")}\n`;
+  if (conv.facts?.length) text += `本人が伝えた情報（写真より優先する事実）: ${conv.facts.join("／")}\n`;
+  if (conv.picked) text += `本人が写真をタップして取った色（アプリが数値で計算。色については写真の見え方より最優先）: ${conv.picked.hex}、${conv.picked.name}系${conv.picked.traits.length ? "、" + conv.picked.traits.join("・") : ""}${conv.picked.near ? `、色見本の「${conv.picked.near.name}」に近い` : "、13色の色見本とは離れている"}\n`;
+  content.push({ type: "text", text });
+  return { role: "user", content };
+}
+function conversationMessages(conv) {
+  const msgs = [firstMessage(conv)];
+  conv.turns.forEach((t, k) => {
+    if (k > 0) msgs.push({ role: "user", content: t.question });
+    if (t.raw) msgs.push({ role: "assistant", content: t.raw });
+  });
+  return msgs;
+}
+setInterval(() => { const e = $("#elapsed"); if (e && judgeState.busy) e.textContent = Math.round((Date.now() - judgeState.startedAt) / 1000) + "秒"; }, 1000);
+async function startJudge() {
+  const mode = MODES.find(m => m.id === judgeState.mode);
+  const images = [];
+  mode.slots.forEach((s, k) => (judgeState.photos[k] || []).forEach(p => images.push({ label: s.label, data: p.full, thumb: p.thumb })));
+  const product = mode.product ? judgeState.product.trim() : "";
+  if (!images.length && !product) { judgeState.error = mode.product ? "写真か商品名・品番のどちらかを入れてください" : "写真を1枚以上入れてください"; return renderAi(); }
+  const conv = {
+    id: String(Date.now()), at: Date.now(), mode: mode.id, note: judgeState.note.trim(), shopping: mode.shopping && judgeState.shopping, product, productInfo: "",
+    picked: mode.id !== "face" ? pickedColor() : null,
+    selfCheck: mode.id === "face" ? [...mkChecked] : [], facts: FACTS.filter(f => f.modes.includes(mode.id) && judgeState.facts[f.id]).map(f => `${f.label}: ${judgeState.facts[f.id]}`), images, thumbs: images.map(i => i.thumb), turns: [],
+  };
+  judgeState.busy = true; judgeState.error = ""; judgeState.startedAt = Date.now();
+  judgeState.stage = product ? "search" : "judge"; renderAi();
+  try {
+    if (product) {
+      conv.productInfo = await searchProduct(product, mode);
+      judgeState.stage = "judge"; renderAi();
+    }
+    const { result, raw } = await callClaude(conversationMessages(conv));
+    conv.turns.push({ result, raw });
+    judgeState.current = conv; judgeState.note = ""; judgeState.shopping = false; judgeState.product = ""; judgeState.picker = null; judgeState.picked = null; judgeState.white = null;
+    await saveHistory(conv);
+  } catch (e) { judgeState.error = errorText(e); }
+  judgeState.busy = false; judgeState.stage = ""; renderJudge();
+}
+async function followUp(q) {
+  const conv = judgeState.current;
+  judgeState.busy = true; judgeState.error = ""; judgeState.startedAt = Date.now(); renderAi();
+  try {
+    const turn = { question: q };
+    const { result, raw } = await callClaude([...conversationMessages(conv), { role: "user", content: q }]);
+    Object.assign(turn, { result, raw });
+    conv.turns.push(turn);
+    await saveHistory(conv);
+  } catch (e) { judgeState.error = errorText(e); }
+  judgeState.busy = false; renderJudge();
+}
+async function saveHistory(conv) {
+  const { images, ...rest } = conv; // 送った大きい写真は保存しない（小さい写真だけ）
+  await idb.put(rest);
+}
+async function renderHistory() {
+  const el = $("#hist"); if (!el) return;
+  const all = await idb.all();
+  if (!all.length) { el.innerHTML = `<div class="empty">${EMPTY_ART}<p class="muted">AIに見てもらうと、ここに<br>直近${HISTORY_MAX}件が残ります</p></div>`; return; }
+  el.innerHTML = all.map(h => {
+    const r = h.turns[h.turns.length - 1]?.result;
+    const d = new Date(h.at);
+    return `<button class="hist" data-h="${esc(h.id)}">${h.thumbs[0] ? `<img src="${h.thumbs[0]}" alt="">` : `<span class="ph"></span>`}<span class="t"><b>${r ? esc(r.headline) : "結果なし"}</b><span class="muted">${d.getMonth() + 1}/${d.getDate()}・${esc(MODES.find(m => m.id === h.mode)?.label || "")}</span></span>${r ? grade(r.overall) : ""}</button><div id="hd-${esc(h.id)}" hidden></div>`;
+  }).join("");
+  el.querySelectorAll("[data-h]").forEach(b => b.onclick = () => {
+    const box = $("#hd-" + CSS.escape(b.dataset.h));
+    if (!box.hidden) { box.hidden = true; return; }
+    box.innerHTML = renderConversation(all.find(h => h.id === b.dataset.h), false);
+    box.hidden = false;
+  });
+}
+
+// ================= 設定 =================
+function renderSettings() {
+  const el = $("#settings");
+  const key = store.get("ba_apiKey");
+  const month = new Date().toISOString().slice(0, 7);
+  const u = store.get("ba_usage", {})[month] || { count: 0, usd: 0 };
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  el.innerHTML = `
+    <h1>設定</h1>
+    <div class="${standalone ? "card" : "notice"}" style="${standalone ? "" : "margin:0 0 12px"}">
+      ${standalone ? `<p class="small" style="margin:0">${icon("ok")} ホーム画面のアプリで開いています。データはこのアプリの中に保存されます</p>`
+        : `${icon("alert")} いまは Safari などのブラウザで開いています。<b>ホーム画面のアプリとは保存場所が別</b>です。ふだん使う方で、キーと診断データを入れてください。プライベートブラウズでは、閉じるとデータが消えます`}
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0"><span class="bub b-lilac" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center">${icon("palette")}</span>画面の色</h2>
+      <div class="seg" role="group" aria-label="画面の色" style="box-shadow:none;background:var(--surface2)">${[["light", "ライト"], ["dark", "ダーク"], ["auto", "自動"]].map(([v, l]) => `<button data-theme-set="${v}" aria-pressed="${settings.theme === v}">${l}</button>`).join("")}</div>
+      <p class="muted" style="margin-top:8px">自動は、iPhone の「ライト／ダーク」の設定に合わせます</p>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0"><span class="bub b-rose" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center">${icon("book")}</span>診断データ</h2>
+      <p>${profile ? `読み込み済み（${esc(profile.updatedAt)} 版）` : "まだ読み込んでいません"}</p>
+      <p class="muted">Claude Code が作った profile.json を選びます。データはこの端末の中だけに保存されます。</p>
+      <div class="row"><label class="btn primary">読み込む<input type="file" accept=".json,application/json" id="pf" class="sr"></label>
+      ${profile ? `<button class="btn" id="pfOut">書き出す</button>` : ""}</div>
+      <p id="pfMsg" class="small" role="status"></p>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0"><span class="bub b-lilac" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center">${icon("key")}</span>Claude の APIキー</h2>
+      <p>${key ? `保存済み（…${esc(key.slice(-4))}）` : "まだ保存していません"}</p>
+      <p class="muted">この端末の中だけに保存します。Anthropic のコンソールで、このアプリ専用のキーを作り、月の上限額を設定してから使ってください。</p>
+      <input type="password" id="key" autocomplete="off" placeholder="sk-ant-…" aria-label="APIキー">
+      <div class="row" style="margin-top:8px"><button class="btn primary" id="keySave">保存</button>${key ? `<button class="btn" id="keyDel">削除</button>` : ""}</div>
+      <p id="keyMsg" class="small" role="status"></p>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0"><span class="bub b-mint" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center">${icon("sparkle")}</span>AI判定</h2>
+      <label for="model" class="muted">モデル</label>
+      <select id="model">${Object.entries(MODELS).map(([id, m]) => `<option value="${id}" ${settings.model === id ? "selected" : ""}>${esc(m.label)}</option>`).join("")}</select>
+      <label for="effort" class="muted" style="display:block;margin-top:10px">考える深さ</label>
+      <select id="effort">${[["medium", "ふつう（標準）"], ["low", "軽く（いちばん速い・安い）"], ["high", "しっかり（遅い・じっくり）"]].map(([v, l]) => `<option value="${v}" ${settings.effort === v ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <p class="muted" style="margin-top:12px">今月の利用: ${u.count} 回・約 $${u.usd.toFixed(2)}（約 ${Math.round(u.usd * YEN_PER_USD)} 円。1ドル${YEN_PER_USD}円で計算）</p>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0"><span class="bub b-rose" style="width:34px;height:34px;border-radius:11px;display:grid;place-items:center">${icon("clock")}</span>判定の履歴</h2>
+      <p class="muted">直近${HISTORY_MAX}件をこの端末に保存しています。</p>
+      <button class="btn" id="histClear">履歴をすべて消す</button>
+    </div>
+    <p class="muted" style="text-align:center">アプリの版: ${APP_VERSION}</p>
+    <details class="fold"><summary><span class="bub b-mint">${icon("help")}</span>保存の状態（うまく保存されないとき）${icon("chev", "chev")}</summary>
+      <div class="md" id="diag"><p class="muted">確認中…</p></div></details>`;
+  renderDiag();
+  $("#pf").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      if (!data.summary || !data.judge || !data.makeup || !data.aiText) throw new Error("形が違います");
+      if (!store.set("ba_profile", data)) throw new Error("保存できませんでした（容量不足の可能性）");
+      profile = data; renderAll(); $("#pfMsg").textContent = "読み込みました";
+    } catch (err) { $("#pfMsg").textContent = "読み込めませんでした: " + err.message; }
+  };
+  $("#pfOut")?.addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(profile, null, 1)], { type: "application/json" }));
+    a.download = `profile_${profile.updatedAt}.json`; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+  $("#keySave").onclick = () => {
+    const v = $("#key").value.trim();
+    if (!v.startsWith("sk-ant-")) { $("#keyMsg").textContent = "sk-ant- で始まるキーを入れてください"; return; }
+    if (!store.set("ba_apiKey", v) || store.get("ba_apiKey") !== v) { $("#keyMsg").textContent = "保存できませんでした。プライベートブラウズや、LINE などの中のブラウザでは保存できません。Safari かホーム画面のアプリで開いてください"; return; }
+    renderSettings(); renderJudge();
+  };
+  $("#keyDel")?.addEventListener("click", () => { if (confirm("APIキーをこの端末から削除しますか？")) { store.del("ba_apiKey"); renderSettings(); renderJudge(); } });
+  el.querySelectorAll("[data-theme-set]").forEach(b => b.onclick = () => { settings.theme = b.dataset.themeSet; store.set("ba_settings", settings); applyTheme(); renderSettings(); });
+  $("#model").onchange = e => { settings.model = e.target.value; store.set("ba_settings", settings); };
+  $("#effort").onchange = e => { settings.effort = e.target.value; store.set("ba_settings", settings); };
+  $("#histClear").onclick = async () => { if (confirm("判定の履歴をすべて消しますか？")) { await idb.clear(); renderJudge(); } };
+}
+
+async function renderDiag() {
+  const el = $("#diag"); if (!el) return;
+  let testOk = false;
+  try { localStorage.setItem("ba_test", "1"); testOk = localStorage.getItem("ba_test") === "1"; localStorage.removeItem("ba_test"); } catch {}
+  let persisted = "不明";
+  try { if (navigator.storage?.persisted) persisted = (await navigator.storage.persisted()) ? "はい" : "いいえ"; } catch {}
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const fmt = t => { const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`; };
+  const rows = [
+    ["開いている場所", standalone ? "ホーム画面のアプリ" : "ブラウザ（Safari など）"],
+    ["この端末に書き込めるか", testOk ? "できる" : "できない（プライベートブラウズや Cookie のブロックの可能性）"],
+    ["前回開いた時刻", lastOpen ? fmt(lastOpen) : "記録なし（初めて開いた、またはデータが消えた）"],
+    ["開いた回数（データが消えると1に戻る）", `${openCount} 回`],
+    ["消えにくい保存の許可", persisted],
+    ["診断データ", profile ? `あり（${profile.updatedAt} 版）` : "なし"],
+    ["APIキー", store.get("ba_apiKey") ? "あり" : "なし"],
+  ];
+  el.innerHTML = `<table><tbody>${rows.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join("")}</tbody></table>
+    <p class="muted">閉じて開き直したあとに「開いた回数」が1に戻っていたら、端末側でデータが消されています。この表をスクリーンショットで送ってください。</p>`;
+}
+
+function renderAll() { renderQuick(); renderMakeup(); renderJudge(); renderSettings(); }
+
+// 新しい版が公開されていたら知らせる（スマホが古い版を覚えていても更新できるように）
+async function checkUpdate() {
+  try {
+    const html = await (await fetch(location.pathname, { cache: "no-store" })).text();
+    const latest = html.match(/const APP_VERSION = "([^"]+)"/)?.[1];
+    if (!latest || latest === APP_VERSION) return;
+    const el = $("#update");
+    el.hidden = false;
+    el.innerHTML = `<div class="notice" style="display:flex;align-items:center;gap:10px;margin:0 0 12px">${icon("sparkle")}<span style="flex:1">新しい版があります</span><button class="btn primary" id="doUpdate" style="min-height:38px">更新する</button></div>`;
+    $("#doUpdate").onclick = () => location.replace(`${location.pathname}?v=${encodeURIComponent(latest)}`);
+  } catch {}
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(); });
+applyTheme();
+checkUpdate();
+try { navigator.storage?.persist?.(); } catch {}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+renderAll();
+</script>
+</body>
+</html>
